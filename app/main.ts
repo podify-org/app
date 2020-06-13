@@ -2,6 +2,8 @@ import Vue from 'nativescript-vue'
 import App from './components/App'
 import VueDevtools from 'nativescript-vue-devtools'
 
+const appSettings = require("tns-core-modules/application-settings");
+
 if(TNS_ENV !== 'production') {
     Vue.use(VueDevtools, { host: 'laptop.zt.maxhollmann.com:8098' });
 }
@@ -15,23 +17,25 @@ Vue.registerElement(
   () => require('nativescript-ui-sidedrawer').RadSideDrawer
 )
 
-
 import VueApollo from "vue-apollo";
 import {
     ApolloClient,
     InMemoryCache,
     HttpLink,
-    ApolloLink
 } from "apollo-boost";
-import { onError } from "apollo-link-error";
+import { createHttpLink } from "apollo-link-http";
 
 Vue.use(VueApollo);
-const httpLink = new HttpLink({
-    uri: "http://laptop.zt.maxhollmann.com:3000/api",
-});
+
+const customFetch = (uri, options) => {
+    const url = appSettings.getString("serverUrl");
+    return fetch(url, options);
+};
+
+const httpLink = createHttpLink({ fetch: customFetch });
 
 export const apolloClient = new ApolloClient({
-    link: ApolloLink.from([httpLink]),
+    link: httpLink,
     cache: new InMemoryCache(),
 });
 

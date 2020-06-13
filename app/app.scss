@@ -7,3 +7,30 @@
 
 // Global SCSS styling
 // @see https://docs.nativescript.org/ui/styling
+
+ActionBar {
+  background-color: #222b3b;
+  color: #ffffff;
+
+  .title {
+    text-align: left;
+    padding-left: 16;
+  }
+}
+
+Label {
+  &.form-label {
+    font-size: 16;
+    color: #555555;
+    padding: 8 16 0 16;
+  }
+}
+
+TextField {
+  height: 40;
+  font-size: 20;
+}
+
+TextView {
+  font-size: 16;
+}

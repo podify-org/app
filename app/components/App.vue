@@ -1,6 +1,6 @@
 <template>
-<Page>
-  <ActionBar title="Test title">
+<Page @navigatedTo="navigatedTo()">
+  <ActionBar>
     <GridLayout width="100%" columns="auto, *">
       <Label text="MENU" @tap="$refs.drawer.nativeView.showDrawer()" col="0"/>
       <Label class="title" text="Podify"  col="1"/>
@@ -9,31 +9,44 @@
 
   <RadSideDrawer ref="drawer">
     <SideDrawer ~drawerContent></SideDrawer>
-    <Login ~mainContent></Login>
+
+    <StackLayout ~mainContent>
+      <Button text="Home" @tap="route()" />
+    </StackLayout>
   </RadSideDrawer>
 </Page>
 </template>
 
 <script lang="ts">
 import SideDrawer from '~/components/SideDrawer.vue';
-import Login from '~/components/Login.vue';
+import routes from '~/routes';
 
 export default {
     components: {
         SideDrawer,
-        Login,
-    }
+    },
+    mounted() {
+        this.route();
+    },
+    methods: {
+        route() {
+            if (!this.$store.state.serverConfig.configured) {
+                this.$nextTick(() => {
+                    this.$navigateTo(routes.serverSetup, { clearHistory: true });
+                })
+            } else if (!this.$store.state.serverConfig.configured) {
+                this.$nextTick(() => {
+                    this.$navigateTo(routes.serverSetup, { clearHistory: true });
+                })
+            }
+        },
+        navigatedTo() {
+            console.log("Navigated to App");
+            this.route();
+        },
+    },
 }
 </script>
 
 <style scoped>
-ActionBar {
-  background-color: #222b3b;
-  color: #ffffff;
-}
-
-.title {
-  text-align: left;
-  padding-left: 16;
-}
 </style>

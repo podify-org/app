@@ -3,14 +3,19 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+import serverConfig from '~/store/server-config.ts'
+
 export default new Vuex.Store({
-  state: {
+    state: {
 
-  },
-  mutations: {
+    },
+    mutations: {
 
-  },
-  actions: {
+    },
+    actions: {
 
-  }
+    },
+    modules: {
+        serverConfig,
+    }
 });

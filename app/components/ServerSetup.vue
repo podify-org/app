@@ -2,27 +2,21 @@
 <Page>
   <ActionBar>
     <GridLayout width="100%" columns="auto, *">
-      <Label class="title" text="Sign in"  col="1"/>
+      <Label class="title" text="Server Setup"  col="1"/>
     </GridLayout>
   </ActionBar>
 
   <StackLayout>
     <Label class="form-label"
-           text="Email"
+           text="API URL"
            />
-    <TextField v-model="email"
-               keyboardType="email"
-               hint="you@example.com"
+    <TextField hint="https://..."
+               v-model="url"
+               keyboardType="url"
                />
-    <Label class="form-label"
-           text="Password"
-           />
-    <TextField v-model="password"
-               :secure="true"
-               />
-    <Button text="Sign in"
-            @tap="signIn()"
-            :isEnabled="!busy"
+    <Button text="Connect"
+            @tap="connect()"
+            :isEnabled="!connecting"
             class="-primary"
             />
     <TextView v-model="statusText"
@@ -34,31 +28,37 @@
 </template>
 
 <script lang="ts">
+const appSettings = require("tns-core-modules/application-settings");
 import queries from '~/queries';
+import routes from '~/routes';
 
 export default {
     data() {
         return {
-            email: '',
-            password: '',
-            busy: false,
+            url: appSettings.getString("serverUrl"),
             statusText: '',
+            connecting: false,
         }
     },
     methods: {
-        signIn() {
+        connect() {
+            appSettings.setString("serverUrl", this.url);
+
+            this.statusText = "Connecting...";
+            this.connecting = true;
+
             this.$apollo.query({
                 query: queries.serverInfo,
                 fetchPolicy: 'no-cache',
             }).then(({ data: { serverInfo: { rootUrl } } }) => {
-                this.connected = true;
-                this.serverUrl = rootUrl;
-                console.log("Got a result!");
-                console.log(rootUrl);
+                this.$store.commit('connectionEstablished');
+                this.statusText = "Connected!";
+                this.$navigateTo(routes.login);
             }).catch(e => {
-                console.log("Error!");
-                console.log(typeof(e));
-                console.log(e);
+                this.$store.commit('connectionFailed');
+                this.statusText = e.toString();
+            }).finally(() => {
+                this.connecting = false;
             });
         },
     },
