@@ -7,7 +7,7 @@ const appSettings = require("tns-core-modules/application-settings");
 if(TNS_ENV !== 'production') {
     Vue.use(VueDevtools, { host: 'laptop.zt.maxhollmann.com:8098' });
 }
-import store from './store'
+import store from './store/index'
 
 // Prints Vue logs when --env.production is *NOT* set while building
 Vue.config.silent = (TNS_ENV === 'production')

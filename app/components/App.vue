@@ -34,9 +34,9 @@ export default {
                 this.$nextTick(() => {
                     this.$navigateTo(routes.serverSetup, { clearHistory: true });
                 })
-            } else if (!this.$store.state.serverConfig.configured) {
+            } else if (!this.$store.state.serverConfig.authenticated) {
                 this.$nextTick(() => {
-                    this.$navigateTo(routes.serverSetup, { clearHistory: true });
+                    this.$navigateTo(routes.login, { clearHistory: true });
                 })
             }
         },

@@ -8,4 +8,12 @@ export default {
       }
     }
   `,
+  signIn: gql`
+    mutation signIn($email: String!, $password: String!) {
+      signIn(input: {email: $email, password: $password}) {
+        success
+        authenticationToken
+      }
+    }
+  `,
 };

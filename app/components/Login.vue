@@ -10,14 +10,14 @@
     <Label class="form-label"
            text="Email"
            />
-    <TextField v-model="email"
+    <TextField v-model="form.email"
                keyboardType="email"
                hint="you@example.com"
                />
     <Label class="form-label"
            text="Password"
            />
-    <TextField v-model="password"
+    <TextField v-model="form.password"
                :secure="true"
                />
     <Button text="Sign in"
@@ -34,31 +34,44 @@
 </template>
 
 <script lang="ts">
+const appSettings = require("tns-core-modules/application-settings");
 import queries from '~/queries';
+import routes from '~/routes';
 
 export default {
     data() {
         return {
-            email: '',
-            password: '',
+            form: {
+                email: '',
+                password: '',
+            },
             busy: false,
             statusText: '',
         }
     },
     methods: {
         signIn() {
-            this.$apollo.query({
-                query: queries.serverInfo,
+            this.busy = true;
+            this.statusText = "Signing in..."
+
+            this.$apollo.mutate({
+                mutation: queries.signIn,
+                variables: this.form,
                 fetchPolicy: 'no-cache',
-            }).then(({ data: { serverInfo: { rootUrl } } }) => {
-                this.connected = true;
-                this.serverUrl = rootUrl;
-                console.log("Got a result!");
-                console.log(rootUrl);
+            }).then(({ data: { signIn: { success, authenticationToken } } }) => {
+                if (success) {
+                    console.log(success, authenticationToken);
+                    this.statusText = "Signed in successfully!";
+                    appSettings.setString("authenticationToken", authenticationToken);
+                    this.$store.commit('authenticated');
+                    this.$navigateTo(routes.root);
+                } else {
+                    this.statusText = "Wrong email or password."
+                }
             }).catch(e => {
-                console.log("Error!");
-                console.log(typeof(e));
-                console.log(e);
+                this.statusText = e.toString();
+            }).finally(() => {
+                this.busy = false;
             });
         },
     },
